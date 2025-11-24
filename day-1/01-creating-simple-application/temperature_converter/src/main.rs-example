@@ -1,0 +1,84 @@
+use std::io;
+
+// Temperature Converter Application
+// Converts between Celsius and Fahrenheit
+
+fn main() {
+    println!("=== Temperature Converter ===");
+    println!("1. Celsius to Fahrenheit");
+    println!("2. Fahrenheit to Celsius");
+    println!("Enter your choice (1 or 2):");
+    
+    let mut choice = String::new();
+    io::stdin()
+        .read_line(&mut choice)
+        .expect("Failed to read choice");
+    
+    let choice: u32 = match choice.trim().parse() {
+        Ok(num) => num,
+        Err(_) => {
+            println!("Invalid input! Please enter 1 or 2.");
+            return;
+        }
+    };
+    
+    println!("Enter the temperature:");
+    
+    let mut temp_input = String::new();
+    io::stdin()
+        .read_line(&mut temp_input)
+        .expect("Failed to read temperature");
+    
+    let temperature: f64 = match temp_input.trim().parse() {
+        Ok(num) => num,
+        Err(_) => {
+            println!("Invalid temperature! Please enter a number.");
+            return;
+        }
+    };
+    
+    match choice {
+        1 => {
+            let fahrenheit = celsius_to_fahrenheit(temperature);
+            println!("{}°C = {:.2}°F", temperature, fahrenheit);
+        }
+        2 => {
+            let celsius = fahrenheit_to_celsius(temperature);
+            println!("{}°F = {:.2}°C", temperature, celsius);
+        }
+        _ => {
+            println!("Invalid choice! Please select 1 or 2.");
+        }
+    }
+}
+
+/// Converts Celsius to Fahrenheit
+/// Formula: F = (C × 9/5) + 32
+fn celsius_to_fahrenheit(celsius: f64) -> f64 {
+    (celsius * 9.0 / 5.0) + 32.0
+}
+
+/// Converts Fahrenheit to Celsius
+/// Formula: C = (F - 32) × 5/9
+fn fahrenheit_to_celsius(fahrenheit: f64) -> f64 {
+    (fahrenheit - 32.0) * 5.0 / 9.0
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_celsius_to_fahrenheit() {
+        assert_eq!(celsius_to_fahrenheit(0.0), 32.0);
+        assert_eq!(celsius_to_fahrenheit(100.0), 212.0);
+        assert_eq!(celsius_to_fahrenheit(-40.0), -40.0);
+    }
+    
+    #[test]
+    fn test_fahrenheit_to_celsius() {
+        assert_eq!(fahrenheit_to_celsius(32.0), 0.0);
+        assert_eq!(fahrenheit_to_celsius(212.0), 100.0);
+        assert_eq!(fahrenheit_to_celsius(-40.0), -40.0);
+    }
+}
