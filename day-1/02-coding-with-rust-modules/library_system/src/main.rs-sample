@@ -1,0 +1,49 @@
+// Library Management System
+// Demonstrates module organization and privacy
+
+mod library;
+
+use library::Book;
+use library::member::Member;
+use library::transaction;
+
+fn main() {
+    println!("=== Library Management System ===\n");
+    
+    // Create books
+    let book1 = Book::new(
+        String::from("The Rust Programming Language"),
+        String::from("Steve Klabnik"),
+        String::from("978-1718500440")
+    );
+    
+    let book2 = Book::new(
+        String::from("Programming Rust"),
+        String::from("Jim Blandy"),
+        String::from("978-1492052586")
+    );
+    
+    // Create member
+    let mut member = Member::new(
+        String::from("Alice"),
+        String::from("alice@example.com")
+    );
+    
+    // Display information
+    book1.display();
+    book2.display();
+    member.display();
+    
+    // Borrow books
+    println!("\n--- Borrowing Books ---");
+    transaction::borrow_book(&mut member, &book1);
+    transaction::borrow_book(&mut member, &book2);
+    
+    // Display borrowed books
+    member.display_borrowed_books();
+    
+    // Return a book
+    println!("\n--- Returning Book ---");
+    transaction::return_book(&mut member, &book1);
+    member.display_borrowed_books();
+}

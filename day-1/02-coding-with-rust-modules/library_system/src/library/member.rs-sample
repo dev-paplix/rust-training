@@ -1,0 +1,79 @@
+// Member module - manages library members
+
+/// Represents a library member
+pub struct Member {
+    name: String,
+    email: String,
+    member_id: u32,
+    borrowed_books: Vec<String>,
+}
+
+// Static counter for member IDs
+static mut MEMBER_COUNTER: u32 = 1000;
+
+impl Member {
+    /// Creates a new member
+    pub fn new(name: String, email: String) -> Self {
+        let id = unsafe {
+            MEMBER_COUNTER += 1;
+            MEMBER_COUNTER
+        };
+        
+        Member {
+            name,
+            email,
+            member_id: id,
+            borrowed_books: Vec::new(),
+        }
+    }
+    
+    /// Gets member name
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+    
+    /// Gets member ID
+    pub fn member_id(&self) -> u32 {
+        self.member_id
+    }
+    
+    /// Adds a borrowed book
+    pub(crate) fn add_borrowed_book(&mut self, isbn: String) {
+        self.borrowed_books.push(isbn);
+    }
+    
+    /// Removes a borrowed book
+    pub(crate) fn remove_borrowed_book(&mut self, isbn: &str) -> bool {
+        if let Some(pos) = self.borrowed_books.iter().position(|x| x == isbn) {
+            self.borrowed_books.remove(pos);
+            true
+        } else {
+            false
+        }
+    }
+    
+    /// Gets number of borrowed books
+    pub fn borrowed_count(&self) -> usize {
+        self.borrowed_books.len()
+    }
+    
+    /// Displays member information
+    pub fn display(&self) {
+        println!("\n👤 Member: {}", self.name);
+        println!("   Email: {}", self.email);
+        println!("   Member ID: {}", self.member_id);
+        println!("   Books borrowed: {}", self.borrowed_books.len());
+    }
+    
+    /// Displays borrowed books
+    pub fn display_borrowed_books(&self) {
+        if self.borrowed_books.is_empty() {
+            println!("No books currently borrowed.");
+        } else {
+            println!("Currently borrowed books:");
+            for (i, isbn) in self.borrowed_books.iter().enumerate() {
+                println!("  {}. ISBN: {}", i + 1, isbn);
+            }
+        }
+    }
+}
