@@ -1,0 +1,56 @@
+// Library module - demonstrates module organization
+pub mod member;
+pub mod transaction;
+
+/// Represents a book in the library
+pub struct Book {
+    title: String,
+    author: String,
+    isbn: String,
+    available: bool,
+}
+
+impl Book {
+    /// Creates a new book
+    pub fn new(title: String, author: String, isbn: String) -> Self {
+        Book {
+            title,
+            author,
+            isbn,
+            available: true,
+        }
+    }
+    
+    /// Gets the book title
+    pub fn title(&self) -> &str {
+        &self.title
+    }
+    
+    /// Gets the book author
+    pub fn author(&self) -> &str {
+        &self.author
+    }
+    
+    /// Gets the ISBN
+    pub fn isbn(&self) -> &str {
+        &self.isbn
+    }
+    
+    /// Checks if book is available
+    pub fn is_available(&self) -> bool {
+        self.available
+    }
+    
+    /// Sets availability status
+    pub(crate) fn set_available(&mut self, available: bool) {
+        self.available = available;
+    }
+    
+    /// Displays book information
+    pub fn display(&self) {
+        println!("📚 Book: {}", self.title);
+        println!("   Author: {}", self.author);
+        println!("   ISBN: {}", self.isbn);
+        println!("   Status: {}", if self.available { "Available" } else { "Borrowed" });
+    }
+}

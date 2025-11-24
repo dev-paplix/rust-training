@@ -1,0 +1,48 @@
+// Transaction module - handles borrowing and returning books
+
+use super::{Book, member::Member};
+
+const MAX_BOOKS_PER_MEMBER: usize = 5;
+
+/// Borrows a book for a member
+pub fn borrow_book(member: &mut Member, book: &Book) {
+    if member.borrowed_count() >= MAX_BOOKS_PER_MEMBER {
+        println!("❌ Cannot borrow more books. Maximum limit reached.");
+        return;
+    }
+    
+    if !book.is_available() {
+        println!("❌ Book '{}' is not available.", book.title());
+        return;
+    }
+    
+    member.add_borrowed_book(book.isbn().to_string());
+    println!("✅ Book '{}' borrowed by {}", book.title(), member.name());
+}
+
+/// Returns a book from a member
+pub fn return_book(member: &mut Member, book: &Book) {
+    if member.remove_borrowed_book(book.isbn()) {
+        println!("✅ Book '{}' returned by {}", book.title(), member.name());
+    } else {
+        println!("❌ Book '{}' was not borrowed by {}", book.title(), member.name());
+    }
+}
+
+/// Calculates late fees (private helper function)
+fn calculate_late_fee(days_late: u32) -> f64 {
+    const DAILY_FEE: f64 = 0.50;
+    days_late as f64 * DAILY_FEE
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_late_fee_calculation() {
+        assert_eq!(calculate_late_fee(0), 0.0);
+        assert_eq!(calculate_late_fee(5), 2.5);
+        assert_eq!(calculate_late_fee(10), 5.0);
+    }
+}
