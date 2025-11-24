@@ -1,0 +1,57 @@
+use std::io;
+use std::cmp::Ordering;
+use rand::Rng;
+
+// Number Guessing Game
+// The computer picks a random number between 1 and 100
+// Player tries to guess it with hints
+
+fn main() {
+    println!("=== Number Guessing Game ===");
+    println!("I'm thinking of a number between 1 and 100.");
+    
+    // Generate random number
+    let secret_number = rand::thread_rng().gen_range(1..=100);
+    let mut attempts = 0;
+    
+    loop {
+        println!("\nPlease input your guess:");
+        
+        let mut guess = String::new();
+        
+        io::stdin()
+            .read_line(&mut guess)
+            .expect("Failed to read line");
+        
+        // Parse the guess
+        let guess: u32 = match guess.trim().parse() {
+            Ok(num) => {
+                if num < 1 || num > 100 {
+                    println!("Please enter a number between 1 and 100!");
+                    continue;
+                }
+                num
+            }
+            Err(_) => {
+                println!("Please enter a valid number!");
+                continue;
+            }
+        };
+        
+        attempts += 1;
+        
+        println!("You guessed: {}", guess);
+        
+        // Compare guess with secret number
+        match guess.cmp(&secret_number) {
+            Ordering::Less => println!("Too small! 📉"),
+            Ordering::Greater => println!("Too big! 📈"),
+            Ordering::Equal => {
+                println!("\n🎉 You win! 🎉");
+                println!("The secret number was {}", secret_number);
+                println!("You guessed it in {} attempts!", attempts);
+                break;
+            }
+        }
+    }
+}
