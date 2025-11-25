@@ -1,0 +1,521 @@
+// Logic Gates Simulator
+// Simulates digital logic gates and circuits
+
+use std::io::{self, Write};
+
+fn main() {
+    println!("=== Logic Gates Simulator ===\n");
+    
+    loop {
+        println!("\nChoose a demonstration:");
+        println!("1. Basic Gates (AND, OR, NOT, XOR)");
+        println!("2. Compound Gates (NAND, NOR, XNOR)");
+        println!("3. Build Simple Circuit");
+        println!("4. Half Adder");
+        println!("5. Full Adder");
+        println!("6. Multiplexer (MUX)");
+        println!("7. De multiplexer (DEMUX)");
+        println!("8. Exit");
+        print!("\nYour choice: ");
+        io::stdout().flush().unwrap();
+        
+        let choice = read_number();
+        
+        match choice {
+            1 => basic_gates(),
+            2 => compound_gates(),
+            3 => build_circuit(),
+            4 => half_adder(),
+            5 => full_adder(),
+            6 => multiplexer(),
+            7 => demultiplexer(),
+            8 => {
+                println!("\nGoodbye!");
+                break;
+            }
+            _ => println!("Invalid choice!"),
+        }
+    }
+}
+
+// Basic logic gate functions
+fn and_gate(a: bool, b: bool) -> bool {
+    a && b
+}
+
+fn or_gate(a: bool, b: bool) -> bool {
+    a || b
+}
+
+fn not_gate(a: bool) -> bool {
+    !a
+}
+
+fn xor_gate(a: bool, b: bool) -> bool {
+    a != b
+}
+
+fn nand_gate(a: bool, b: bool) -> bool {
+    !(a && b)
+}
+
+fn nor_gate(a: bool, b: bool) -> bool {
+    !(a || b)
+}
+
+fn xnor_gate(a: bool, b: bool) -> bool {
+    a == b
+}
+
+fn basic_gates() {
+    println!("\n=== Basic Logic Gates ===");
+    
+    print!("Enter input A (true/false): ");
+    io::stdout().flush().unwrap();
+    let a = read_bool();
+    
+    print!("Enter input B (true/false): ");
+    io::stdout().flush().unwrap();
+    let b = read_bool();
+    
+    println!("\n🔌 Inputs: A={}, B={}", a, b);
+    println!("═══════════════════════════");
+    
+    println!("\n🔹 AND Gate");
+    println!("   A ─┐");
+    println!("      ├─── {}", and_gate(a, b));
+    println!("   B ─┘");
+    println!("   Output: {} (true only if both inputs true)", and_gate(a, b));
+    
+    println!("\n🔹 OR Gate");
+    println!("   A ─┐");
+    println!("      ├─── {}", or_gate(a, b));
+    println!("   B ─┘");
+    println!("   Output: {} (true if at least one input true)", or_gate(a, b));
+    
+    println!("\n🔹 NOT Gate (for A)");
+    println!("   A ─[NOT]─── {}", not_gate(a));
+    println!("   Output: {} (inverts input)", not_gate(a));
+    
+    println!("\n🔹 XOR Gate");
+    println!("   A ─┐");
+    println!("      ├─── {}", xor_gate(a, b));
+    println!("   B ─┘");
+    println!("   Output: {} (true if inputs differ)", xor_gate(a, b));
+}
+
+fn compound_gates() {
+    println!("\n=== Compound Logic Gates ===");
+    
+    print!("Enter input A (true/false): ");
+    io::stdout().flush().unwrap();
+    let a = read_bool();
+    
+    print!("Enter input B (true/false): ");
+    io::stdout().flush().unwrap();
+    let b = read_bool();
+    
+    println!("\n🔌 Inputs: A={}, B={}", a, b);
+    println!("═══════════════════════════");
+    
+    println!("\n🔹 NAND Gate (NOT AND)");
+    println!("   A ─┐");
+    println!("      ├─[AND]─[NOT]─── {}", nand_gate(a, b));
+    println!("   B ─┘");
+    println!("   Output: {} (false only if both inputs true)", nand_gate(a, b));
+    println!("   Note: NAND is universal gate!");
+    
+    println!("\n🔹 NOR Gate (NOT OR)");
+    println!("   A ─┐");
+    println!("      ├─[OR]─[NOT]─── {}", nor_gate(a, b));
+    println!("   B ─┘");
+    println!("   Output: {} (true only if both inputs false)", nor_gate(a, b));
+    println!("   Note: NOR is universal gate!");
+    
+    println!("\n🔹 XNOR Gate (NOT XOR / Equivalence)");
+    println!("   A ─┐");
+    println!("      ├─[XOR]─[NOT]─── {}", xnor_gate(a, b));
+    println!("   B ─┘");
+    println!("   Output: {} (true if inputs are same)", xnor_gate(a, b));
+}
+
+fn build_circuit() {
+    println!("\n=== Build Simple Circuit ===");
+    
+    println!("\nSelect a circuit to build:");
+    println!("1. (A AND B) OR C");
+    println!("2. (A OR B) AND (C OR D)");
+    println!("3. NOT(A AND B) - Using NAND");
+    println!("4. (A XOR B) AND C");
+    println!("5. Custom: A AND (NOT B OR C)");
+    print!("\nChoice: ");
+    io::stdout().flush().unwrap();
+    
+    let choice = read_number();
+    
+    match choice {
+        1 => circuit_and_or(),
+        2 => circuit_or_and(),
+        3 => circuit_nand(),
+        4 => circuit_xor_and(),
+        5 => circuit_custom(),
+        _ => println!("Invalid choice!"),
+    }
+}
+
+fn circuit_and_or() {
+    println!("\n🔧 Circuit: (A AND B) OR C");
+    println!("   A ─┐");
+    println!("      ├─[AND]─┐");
+    println!("   B ─┘        ├─[OR]─── Output");
+    println!("   C ──────────┘");
+    
+    print!("\nEnter A: ");
+    io::stdout().flush().unwrap();
+    let a = read_bool();
+    
+    print!("Enter B: ");
+    io::stdout().flush().unwrap();
+    let b = read_bool();
+    
+    print!("Enter C: ");
+    io::stdout().flush().unwrap();
+    let c = read_bool();
+    
+    let and_result = and_gate(a, b);
+    let final_result = or_gate(and_result, c);
+    
+    println!("\n📊 Step-by-step:");
+    println!("   1. A AND B = {} AND {} = {}", a, b, and_result);
+    println!("   2. Result OR C = {} OR {} = {}", and_result, c, final_result);
+    println!("\n✅ Final Output: {}", final_result);
+}
+
+fn circuit_or_and() {
+    println!("\n🔧 Circuit: (A OR B) AND (C OR D)");
+    println!("   A ─┐");
+    println!("      ├─[OR]──┐");
+    println!("   B ─┘        │");
+    println!("               ├─[AND]─── Output");
+    println!("   C ─┐        │");
+    println!("      ├─[OR]──┘");
+    println!("   D ─┘");
+    
+    print!("\nEnter A: ");
+    io::stdout().flush().unwrap();
+    let a = read_bool();
+    
+    print!("Enter B: ");
+    io::stdout().flush().unwrap();
+    let b = read_bool();
+    
+    print!("Enter C: ");
+    io::stdout().flush().unwrap();
+    let c = read_bool();
+    
+    print!("Enter D: ");
+    io::stdout().flush().unwrap();
+    let d = read_bool();
+    
+    let or1 = or_gate(a, b);
+    let or2 = or_gate(c, d);
+    let final_result = and_gate(or1, or2);
+    
+    println!("\n📊 Step-by-step:");
+    println!("   1. A OR B = {} OR {} = {}", a, b, or1);
+    println!("   2. C OR D = {} OR {} = {}", c, d, or2);
+    println!("   3. Result1 AND Result2 = {} AND {} = {}", or1, or2, final_result);
+    println!("\n✅ Final Output: {}", final_result);
+}
+
+fn circuit_nand() {
+    println!("\n🔧 Circuit: NOT(A AND B) using NAND Gate");
+    println!("   A ─┐");
+    println!("      ├─[NAND]─── Output");
+    println!("   B ─┘");
+    
+    print!("\nEnter A: ");
+    io::stdout().flush().unwrap();
+    let a = read_bool();
+    
+    print!("Enter B: ");
+    io::stdout().flush().unwrap();
+    let b = read_bool();
+    
+    let result = nand_gate(a, b);
+    
+    println!("\n📊 Calculation:");
+    println!("   NAND = NOT(A AND B)");
+    println!("        = NOT({} AND {})", a, b);
+    println!("        = NOT({})", and_gate(a, b));
+    println!("        = {}", result);
+    println!("\n✅ Output: {}", result);
+}
+
+fn circuit_xor_and() {
+    println!("\n🔧 Circuit: (A XOR B) AND C");
+    println!("   A ─┐");
+    println!("      ├─[XOR]─┐");
+    println!("   B ─┘        ├─[AND]─── Output");
+    println!("   C ──────────┘");
+    
+    print!("\nEnter A: ");
+    io::stdout().flush().unwrap();
+    let a = read_bool();
+    
+    print!("Enter B: ");
+    io::stdout().flush().unwrap();
+    let b = read_bool();
+    
+    print!("Enter C: ");
+    io::stdout().flush().unwrap();
+    let c = read_bool();
+    
+    let xor_result = xor_gate(a, b);
+    let final_result = and_gate(xor_result, c);
+    
+    println!("\n📊 Step-by-step:");
+    println!("   1. A XOR B = {} XOR {} = {}", a, b, xor_result);
+    println!("   2. Result AND C = {} AND {} = {}", xor_result, c, final_result);
+    println!("\n✅ Final Output: {}", final_result);
+}
+
+fn circuit_custom() {
+    println!("\n🔧 Circuit: A AND (NOT B OR C)");
+    println!("            ┌──[NOT]─┐");
+    println!("   B ───────┘        │");
+    println!("                     ├─[OR]─┐");
+    println!("   C ────────────────┘       ├─[AND]─── Output");
+    println!("   A ────────────────────────┘");
+    
+    print!("\nEnter A: ");
+    io::stdout().flush().unwrap();
+    let a = read_bool();
+    
+    print!("Enter B: ");
+    io::stdout().flush().unwrap();
+    let b = read_bool();
+    
+    print!("Enter C: ");
+    io::stdout().flush().unwrap();
+    let c = read_bool();
+    
+    let not_b = not_gate(b);
+    let or_result = or_gate(not_b, c);
+    let final_result = and_gate(a, or_result);
+    
+    println!("\n📊 Step-by-step:");
+    println!("   1. NOT B = NOT {} = {}", b, not_b);
+    println!("   2. NOT B OR C = {} OR {} = {}", not_b, c, or_result);
+    println!("   3. A AND Result = {} AND {} = {}", a, or_result, final_result);
+    println!("\n✅ Final Output: {}", final_result);
+}
+
+fn half_adder() {
+    println!("\n=== Half Adder ===");
+    println!("Adds two single bits");
+    println!("\n   A ─┐─[XOR]─── Sum");
+    println!("      │");
+    println!("   B ─┤");
+    println!("      │─[AND]─── Carry");
+    
+    print!("\nEnter bit A (0 or 1): ");
+    io::stdout().flush().unwrap();
+    let a = read_number() != 0;
+    
+    print!("Enter bit B (0 or 1): ");
+    io::stdout().flush().unwrap();
+    let b = read_number() != 0;
+    
+    let sum = xor_gate(a, b);
+    let carry = and_gate(a, b);
+    
+    println!("\n📊 Addition:");
+    println!("     {} (A)", if a { 1 } else { 0 });
+    println!("   + {} (B)", if b { 1 } else { 0 });
+    println!("   ───");
+    println!("   {} {} (Carry Sum)", if carry { 1 } else { 0 }, if sum { 1 } else { 0 });
+    
+    println!("\n✅ Sum: {}", if sum { 1 } else { 0 });
+    println!("✅ Carry: {}", if carry { 1 } else { 0 });
+    
+    let decimal = (carry as i32) * 2 + (sum as i32);
+    println!("✅ Decimal: {}", decimal);
+}
+
+fn full_adder() {
+    println!("\n=== Full Adder ===");
+    println!("Adds three bits (including carry-in)");
+    
+    print!("\nEnter bit A (0 or 1): ");
+    io::stdout().flush().unwrap();
+    let a = read_number() != 0;
+    
+    print!("Enter bit B (0 or 1): ");
+    io::stdout().flush().unwrap();
+    let b = read_number() != 0;
+    
+    print!("Enter carry-in (0 or 1): ");
+    io::stdout().flush().unwrap();
+    let cin = read_number() != 0;
+    
+    // First half adder
+    let sum1 = xor_gate(a, b);
+    let carry1 = and_gate(a, b);
+    
+    // Second half adder
+    let sum = xor_gate(sum1, cin);
+    let carry2 = and_gate(sum1, cin);
+    
+    // Final carry
+    let cout = or_gate(carry1, carry2);
+    
+    println!("\n📊 Addition:");
+    println!("     {} (A)", if a { 1 } else { 0 });
+    println!("   + {} (B)", if b { 1 } else { 0 });
+    println!("   + {} (Carry-in)", if cin { 1 } else { 0 });
+    println!("   ───");
+    println!("   {} {} (Carry-out Sum)", if cout { 1 } else { 0 }, if sum { 1 } else { 0 });
+    
+    println!("\n📝 Step-by-step:");
+    println!("   1. A XOR B = {}", sum1);
+    println!("   2. (A XOR B) XOR Cin = {}", sum);
+    println!("   3. Carry = (A AND B) OR ((A XOR B) AND Cin) = {}", cout);
+    
+    println!("\n✅ Sum: {}", if sum { 1 } else { 0 });
+    println!("✅ Carry-out: {}", if cout { 1 } else { 0 });
+    
+    let decimal = (a as i32) + (b as i32) + (cin as i32);
+    println!("✅ Decimal: {}", decimal);
+}
+
+fn multiplexer() {
+    println!("\n=== 2-to-1 Multiplexer (MUX) ===");
+    println!("Selects one of two inputs based on selector");
+    println!("\n   I0 ─┐");
+    println!("       ├─── Output");
+    println!("   I1 ─┤");
+    println!("       │");
+    println!("   S ──┘ (Selector)");
+    
+    print!("\nEnter input 0 (true/false): ");
+    io::stdout().flush().unwrap();
+    let i0 = read_bool();
+    
+    print!("Enter input 1 (true/false): ");
+    io::stdout().flush().unwrap();
+    let i1 = read_bool();
+    
+    print!("Enter selector (0 or 1): ");
+    io::stdout().flush().unwrap();
+    let s = read_number() != 0;
+    
+    // MUX logic: Output = (NOT S AND I0) OR (S AND I1)
+    let not_s = not_gate(s);
+    let path0 = and_gate(i0, not_s);
+    let path1 = and_gate(i1, s);
+    let output = or_gate(path0, path1);
+    
+    println!("\n📊 Logic:");
+    println!("   Output = (NOT S AND I0) OR (S AND I1)");
+    println!("          = (NOT {} AND {}) OR ({} AND {})", s, i0, s, i1);
+    println!("          = ({} AND {}) OR ({} AND {})", not_s, i0, s, i1);
+    println!("          = {} OR {}", path0, path1);
+    println!("          = {}", output);
+    
+    println!("\n✅ Selected input: I{}", if s { 1 } else { 0 });
+    println!("✅ Output: {}", output);
+}
+
+fn demultiplexer() {
+    println!("\n=== 1-to-2 Demultiplexer (DEMUX) ===");
+    println!("Routes input to one of two outputs based on selector");
+    println!("\n              ┌─── O0");
+    println!("   Input ─────┤");
+    println!("              └─── O1");
+    println!("      S ──┘ (Selector)");
+    
+    print!("\nEnter input (true/false): ");
+    io::stdout().flush().unwrap();
+    let input = read_bool();
+    
+    print!("Enter selector (0 or 1): ");
+    io::stdout().flush().unwrap();
+    let s = read_number() != 0;
+    
+    // DEMUX logic
+    let not_s = not_gate(s);
+    let o0 = and_gate(input, not_s);
+    let o1 = and_gate(input, s);
+    
+    println!("\n📊 Logic:");
+    println!("   O0 = Input AND NOT S = {} AND {} = {}", input, not_s, o0);
+    println!("   O1 = Input AND S = {} AND {} = {}", input, s, o1);
+    
+    println!("\n✅ Output 0: {}", o0);
+    println!("✅ Output 1: {}", o1);
+    println!("✅ Input routed to: O{}", if s { 1 } else { 0 });
+}
+
+fn read_number() -> i32 {
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).expect("Failed to read line");
+    input.trim().parse().unwrap_or(0)
+}
+
+fn read_bool() -> bool {
+    let input = read_string().to_lowercase();
+    input == "true" || input == "t" || input == "1" || input == "yes" || input == "y"
+}
+
+fn read_string() -> String {
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).expect("Failed to read line");
+    input.trim().to_string()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_basic_gates() {
+        assert_eq!(and_gate(true, true), true);
+        assert_eq!(or_gate(false, true), true);
+        assert_eq!(not_gate(true), false);
+        assert_eq!(xor_gate(true, false), true);
+    }
+    
+    #[test]
+    fn test_compound_gates() {
+        assert_eq!(nand_gate(true, true), false);
+        assert_eq!(nor_gate(false, false), true);
+        assert_eq!(xnor_gate(true, true), true);
+    }
+    
+    #[test]
+    fn test_half_adder() {
+        let (a, b) = (true, true);  // 1 + 1
+        let sum = xor_gate(a, b);
+        let carry = and_gate(a, b);
+        
+        assert_eq!(sum, false);    // Sum bit = 0
+        assert_eq!(carry, true);   // Carry bit = 1
+        // Result: 10 in binary = 2 in decimal
+    }
+    
+    #[test]
+    fn test_full_adder() {
+        let (a, b, cin) = (true, true, true);  // 1 + 1 + 1
+        
+        let sum1 = xor_gate(a, b);
+        let carry1 = and_gate(a, b);
+        let sum = xor_gate(sum1, cin);
+        let carry2 = and_gate(sum1, cin);
+        let cout = or_gate(carry1, carry2);
+        
+        assert_eq!(sum, true);     // Sum bit = 1
+        assert_eq!(cout, true);    // Carry bit = 1
+        // Result: 11 in binary = 3 in decimal
+    }
+}
