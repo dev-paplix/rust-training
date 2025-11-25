@@ -1,0 +1,693 @@
+// Advanced Collections
+// Demonstrates VecDeque, BTreeMap, BTreeSet, BinaryHeap, and LinkedList
+
+use std::collections::{VecDeque, BTreeMap, BTreeSet, BinaryHeap, LinkedList};
+use std::cmp::Reverse;
+use std::io::{self, Write};
+
+fn main() {
+    println!("=== Advanced Collections ===\n");
+    
+    loop {
+        println!("\nChoose a demonstration:");
+        println!("1. VecDeque (Double-Ended Queue)");
+        println!("2. BTreeMap (Sorted Map)");
+        println!("3. BTreeSet (Sorted Set)");
+        println!("4. BinaryHeap (Priority Queue)");
+        println!("5. LinkedList (Rarely Used)");
+        println!("6. Performance Comparison");
+        println!("7. Exit");
+        print!("\nYour choice: ");
+        io::stdout().flush().unwrap();
+        
+        let choice = read_number();
+        
+        match choice {
+            1 => vecdeque_demo(),
+            2 => btreemap_demo(),
+            3 => btreeset_demo(),
+            4 => binaryheap_demo(),
+            5 => linkedlist_demo(),
+            6 => performance_comparison(),
+            7 => {
+                println!("\nGoodbye!");
+                break;
+            }
+            _ => println!("Invalid choice!"),
+        }
+    }
+}
+
+fn vecdeque_demo() {
+    println!("\n=== VecDeque Demo ===");
+    println!("A double-ended queue: efficient operations at both ends");
+    
+    let mut deque: VecDeque<i32> = VecDeque::new();
+    
+    loop {
+        println!("\nCurrent deque: {:?}", deque);
+        println!("Size: {}, Capacity: {}", deque.len(), deque.capacity());
+        
+        println!("\n1. Push front");
+        println!("2. Push back");
+        println!("3. Pop front");
+        println!("4. Pop back");
+        println!("5. Use as Queue (FIFO)");
+        println!("6. Use as Stack (LIFO)");
+        println!("7. Rotate");
+        println!("8. Back");
+        print!("\nChoice: ");
+        io::stdout().flush().unwrap();
+        
+        let choice = read_number();
+        
+        match choice {
+            1 => {
+                print!("Enter number: ");
+                io::stdout().flush().unwrap();
+                let num = read_number();
+                deque.push_front(num);
+                println!("✅ Pushed {} to front", num);
+            }
+            2 => {
+                print!("Enter number: ");
+                io::stdout().flush().unwrap();
+                let num = read_number();
+                deque.push_back(num);
+                println!("✅ Pushed {} to back", num);
+            }
+            3 => {
+                if let Some(num) = deque.pop_front() {
+                    println!("✅ Popped {} from front", num);
+                } else {
+                    println!("❌ Deque is empty");
+                }
+            }
+            4 => {
+                if let Some(num) = deque.pop_back() {
+                    println!("✅ Popped {} from back", num);
+                } else {
+                    println!("❌ Deque is empty");
+                }
+            }
+            5 => {
+                println!("\n🔄 Queue Demo (FIFO - First In First Out)");
+                let mut queue = VecDeque::new();
+                
+                println!("Enqueuing: 1, 2, 3, 4, 5");
+                for i in 1..=5 {
+                    queue.push_back(i);
+                }
+                
+                println!("Dequeuing:");
+                while let Some(item) = queue.pop_front() {
+                    println!("   Processing: {}", item);
+                }
+            }
+            6 => {
+                println!("\n📚 Stack Demo (LIFO - Last In First Out)");
+                let mut stack = VecDeque::new();
+                
+                println!("Pushing: 1, 2, 3, 4, 5");
+                for i in 1..=5 {
+                    stack.push_back(i);
+                }
+                
+                println!("Popping:");
+                while let Some(item) = stack.pop_back() {
+                    println!("   Popped: {}", item);
+                }
+            }
+            7 => {
+                if deque.is_empty() {
+                    println!("❌ Deque is empty");
+                    continue;
+                }
+                
+                print!("Rotate left (positive) or right (negative)? ");
+                io::stdout().flush().unwrap();
+                let n = read_number();
+                
+                if n > 0 {
+                    deque.rotate_left(n as usize % deque.len());
+                    println!("✅ Rotated left by {}", n);
+                } else if n < 0 {
+                    deque.rotate_right((-n) as usize % deque.len());
+                    println!("✅ Rotated right by {}", -n);
+                }
+            }
+            8 => break,
+            _ => println!("Invalid choice!"),
+        }
+    }
+}
+
+fn btreemap_demo() {
+    println!("\n=== BTreeMap Demo ===");
+    println!("A sorted map: keys are always in order");
+    
+    let mut map: BTreeMap<String, i32> = BTreeMap::new();
+    
+    loop {
+        println!("\nCurrent map:");
+        if map.is_empty() {
+            println!("   [Empty]");
+        } else {
+            for (key, value) in &map {
+                println!("   {} → {}", key, value);
+            }
+        }
+        
+        println!("\n1. Insert");
+        println!("2. Get value");
+        println!("3. Remove");
+        println!("4. Range query");
+        println!("5. First/Last");
+        println!("6. Back");
+        print!("\nChoice: ");
+        io::stdout().flush().unwrap();
+        
+        let choice = read_number();
+        
+        match choice {
+            1 => {
+                print!("Enter key: ");
+                io::stdout().flush().unwrap();
+                let key = read_string();
+                
+                print!("Enter value: ");
+                io::stdout().flush().unwrap();
+                let value = read_number();
+                
+                map.insert(key.clone(), value);
+                println!("✅ Inserted {} → {}", key, value);
+            }
+            2 => {
+                print!("Enter key: ");
+                io::stdout().flush().unwrap();
+                let key = read_string();
+                
+                match map.get(&key) {
+                    Some(value) => println!("✅ {} → {}", key, value),
+                    None => println!("❌ Key not found"),
+                }
+            }
+            3 => {
+                print!("Enter key: ");
+                io::stdout().flush().unwrap();
+                let key = read_string();
+                
+                if let Some(value) = map.remove(&key) {
+                    println!("✅ Removed {} → {}", key, value);
+                } else {
+                    println!("❌ Key not found");
+                }
+            }
+            4 => {
+                print!("Enter start key: ");
+                io::stdout().flush().unwrap();
+                let start = read_string();
+                
+                print!("Enter end key (exclusive): ");
+                io::stdout().flush().unwrap();
+                let end = read_string();
+                
+                println!("\n📊 Range [{}..{}):", start, end);
+                for (key, value) in map.range(start..end) {
+                    println!("   {} → {}", key, value);
+                }
+            }
+            5 => {
+                if let Some((key, value)) = map.first_key_value() {
+                    println!("🥇 First: {} → {}", key, value);
+                } else {
+                    println!("❌ Map is empty");
+                }
+                
+                if let Some((key, value)) = map.last_key_value() {
+                    println!("🥈 Last: {} → {}", key, value);
+                }
+            }
+            6 => break,
+            _ => println!("Invalid choice!"),
+        }
+    }
+}
+
+fn btreeset_demo() {
+    println!("\n=== BTreeSet Demo ===");
+    println!("A sorted set: elements are always in order");
+    
+    let mut set: BTreeSet<i32> = BTreeSet::new();
+    
+    loop {
+        println!("\nCurrent set: {:?}", set);
+        
+        println!("\n1. Insert");
+        println!("2. Remove");
+        println!("3. Contains");
+        println!("4. Range query");
+        println!("5. First/Last");
+        println!("6. Back");
+        print!("\nChoice: ");
+        io::stdout().flush().unwrap();
+        
+        let choice = read_number();
+        
+        match choice {
+            1 => {
+                print!("Enter number: ");
+                io::stdout().flush().unwrap();
+                let num = read_number();
+                
+                if set.insert(num) {
+                    println!("✅ Inserted {}", num);
+                } else {
+                    println!("ℹ️  {} already exists", num);
+                }
+            }
+            2 => {
+                print!("Enter number: ");
+                io::stdout().flush().unwrap();
+                let num = read_number();
+                
+                if set.remove(&num) {
+                    println!("✅ Removed {}", num);
+                } else {
+                    println!("❌ Not found");
+                }
+            }
+            3 => {
+                print!("Enter number: ");
+                io::stdout().flush().unwrap();
+                let num = read_number();
+                
+                if set.contains(&num) {
+                    println!("✅ {} is in the set", num);
+                } else {
+                    println!("❌ {} is NOT in the set", num);
+                }
+            }
+            4 => {
+                print!("Enter start (inclusive): ");
+                io::stdout().flush().unwrap();
+                let start = read_number();
+                
+                print!("Enter end (exclusive): ");
+                io::stdout().flush().unwrap();
+                let end = read_number();
+                
+                let range: Vec<_> = set.range(start..end).copied().collect();
+                println!("\n📊 Range [{}..{}): {:?}", start, end, range);
+            }
+            5 => {
+                if let Some(&first) = set.first() {
+                    println!("🥇 First (min): {}", first);
+                } else {
+                    println!("❌ Set is empty");
+                }
+                
+                if let Some(&last) = set.last() {
+                    println!("🥈 Last (max): {}", last);
+                }
+            }
+            6 => break,
+            _ => println!("Invalid choice!"),
+        }
+    }
+}
+
+fn binaryheap_demo() {
+    println!("\n=== BinaryHeap Demo ===");
+    println!("A priority queue: always gives you the maximum element");
+    
+    println!("\n1. Max Heap");
+    println!("2. Min Heap");
+    println!("3. Task Priority Queue");
+    print!("\nChoice: ");
+    io::stdout().flush().unwrap();
+    
+    let choice = read_number();
+    
+    match choice {
+        1 => max_heap_demo(),
+        2 => min_heap_demo(),
+        3 => task_priority_demo(),
+        _ => println!("Invalid choice!"),
+    }
+}
+
+fn max_heap_demo() {
+    println!("\n🔺 Max Heap - Largest element first");
+    let mut heap = BinaryHeap::new();
+    
+    loop {
+        println!("\nHeap size: {}", heap.len());
+        if let Some(&max) = heap.peek() {
+            println!("Current max: {}", max);
+        }
+        
+        println!("\n1. Push");
+        println!("2. Pop (get max)");
+        println!("3. Peek (view max)");
+        println!("4. View all (unordered)");
+        println!("5. Back");
+        print!("\nChoice: ");
+        io::stdout().flush().unwrap();
+        
+        let choice = read_number();
+        
+        match choice {
+            1 => {
+                print!("Enter number: ");
+                io::stdout().flush().unwrap();
+                let num = read_number();
+                heap.push(num);
+                println!("✅ Pushed {}", num);
+            }
+            2 => {
+                if let Some(max) = heap.pop() {
+                    println!("✅ Popped max: {}", max);
+                } else {
+                    println!("❌ Heap is empty");
+                }
+            }
+            3 => {
+                if let Some(&max) = heap.peek() {
+                    println!("👁️  Max: {}", max);
+                } else {
+                    println!("❌ Heap is empty");
+                }
+            }
+            4 => {
+                let items: Vec<_> = heap.iter().copied().collect();
+                println!("📋 All items (unordered): {:?}", items);
+            }
+            5 => break,
+            _ => println!("Invalid choice!"),
+        }
+    }
+}
+
+fn min_heap_demo() {
+    println!("\n🔻 Min Heap - Smallest element first (using Reverse)");
+    let mut heap: BinaryHeap<Reverse<i32>> = BinaryHeap::new();
+    
+    loop {
+        println!("\nHeap size: {}", heap.len());
+        if let Some(&Reverse(min)) = heap.peek() {
+            println!("Current min: {}", min);
+        }
+        
+        println!("\n1. Push");
+        println!("2. Pop (get min)");
+        println!("3. Peek (view min)");
+        println!("4. Back");
+        print!("\nChoice: ");
+        io::stdout().flush().unwrap();
+        
+        let choice = read_number();
+        
+        match choice {
+            1 => {
+                print!("Enter number: ");
+                io::stdout().flush().unwrap();
+                let num = read_number();
+                heap.push(Reverse(num));
+                println!("✅ Pushed {}", num);
+            }
+            2 => {
+                if let Some(Reverse(min)) = heap.pop() {
+                    println!("✅ Popped min: {}", min);
+                } else {
+                    println!("❌ Heap is empty");
+                }
+            }
+            3 => {
+                if let Some(&Reverse(min)) = heap.peek() {
+                    println!("👁️  Min: {}", min);
+                } else {
+                    println!("❌ Heap is empty");
+                }
+            }
+            4 => break,
+            _ => println!("Invalid choice!"),
+        }
+    }
+}
+
+fn task_priority_demo() {
+    println!("\n📋 Task Priority Queue");
+    
+    #[derive(Eq, PartialEq)]
+    struct Task {
+        priority: u8,
+        name: String,
+    }
+    
+    impl Ord for Task {
+        fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+            self.priority.cmp(&other.priority)
+        }
+    }
+    
+    impl PartialOrd for Task {
+        fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+            Some(self.cmp(other))
+        }
+    }
+    
+    let mut tasks: BinaryHeap<Task> = BinaryHeap::new();
+    
+    loop {
+        println!("\nPending tasks: {}", tasks.len());
+        
+        println!("\n1. Add task");
+        println!("2. Process next task (highest priority)");
+        println!("3. View next task");
+        println!("4. Back");
+        print!("\nChoice: ");
+        io::stdout().flush().unwrap();
+        
+        let choice = read_number();
+        
+        match choice {
+            1 => {
+                print!("Enter task name: ");
+                io::stdout().flush().unwrap();
+                let name = read_string();
+                
+                print!("Enter priority (1-5, 5=highest): ");
+                io::stdout().flush().unwrap();
+                let priority = read_number() as u8;
+                
+                if priority < 1 || priority > 5 {
+                    println!("❌ Priority must be 1-5");
+                    continue;
+                }
+                
+                tasks.push(Task { priority, name: name.clone() });
+                println!("✅ Added task '{}' with priority {}", name, priority);
+            }
+            2 => {
+                if let Some(task) = tasks.pop() {
+                    println!("⚙️  Processing: '{}' (priority {})", task.name, task.priority);
+                } else {
+                    println!("❌ No tasks in queue");
+                }
+            }
+            3 => {
+                if let Some(task) = tasks.peek() {
+                    println!("👁️  Next: '{}' (priority {})", task.name, task.priority);
+                } else {
+                    println!("❌ No tasks in queue");
+                }
+            }
+            4 => break,
+            _ => println!("Invalid choice!"),
+        }
+    }
+}
+
+fn linkedlist_demo() {
+    println!("\n=== LinkedList Demo ===");
+    println!("⚠️  Note: LinkedList is rarely the best choice in Rust!");
+    println!("    Vec or VecDeque is usually better due to cache locality.\n");
+    
+    let mut list: LinkedList<i32> = LinkedList::new();
+    
+    loop {
+        println!("\nCurrent list: {:?}", list);
+        
+        println!("\n1. Push front");
+        println!("2. Push back");
+        println!("3. Pop front");
+        println!("4. Pop back");
+        println!("5. Split at position");
+        println!("6. Append another list");
+        println!("7. Why avoid LinkedList?");
+        println!("8. Back");
+        print!("\nChoice: ");
+        io::stdout().flush().unwrap();
+        
+        let choice = read_number();
+        
+        match choice {
+            1 => {
+                print!("Enter number: ");
+                io::stdout().flush().unwrap();
+                let num = read_number();
+                list.push_front(num);
+                println!("✅ Pushed {} to front", num);
+            }
+            2 => {
+                print!("Enter number: ");
+                io::stdout().flush().unwrap();
+                let num = read_number();
+                list.push_back(num);
+                println!("✅ Pushed {} to back", num);
+            }
+            3 => {
+                if let Some(num) = list.pop_front() {
+                    println!("✅ Popped {} from front", num);
+                } else {
+                    println!("❌ List is empty");
+                }
+            }
+            4 => {
+                if let Some(num) = list.pop_back() {
+                    println!("✅ Popped {} from back", num);
+                } else {
+                    println!("❌ List is empty");
+                }
+            }
+            5 => {
+                if list.is_empty() {
+                    println!("❌ List is empty");
+                    continue;
+                }
+                
+                print!("Split at position: ");
+                io::stdout().flush().unwrap();
+                let pos = read_number() as usize;
+                
+                if pos > list.len() {
+                    println!("❌ Invalid position");
+                    continue;
+                }
+                
+                let tail = list.split_off(pos);
+                println!("✅ Split into:");
+                println!("   Head: {:?}", list);
+                println!("   Tail: {:?}", tail);
+                list.append(&mut tail.clone());
+            }
+            6 => {
+                print!("Enter numbers for new list (comma-separated): ");
+                io::stdout().flush().unwrap();
+                let input = read_string();
+                let mut other: LinkedList<i32> = input
+                    .split(',')
+                    .filter_map(|s| s.trim().parse().ok())
+                    .collect();
+                
+                list.append(&mut other);
+                println!("✅ Appended list");
+            }
+            7 => {
+                println!("\n❓ Why avoid LinkedList in Rust?");
+                println!("\n1. Cache Locality:");
+                println!("   Vec: Elements stored contiguously → fast iteration");
+                println!("   LinkedList: Scattered in memory → cache misses");
+                
+                println!("\n2. Memory Overhead:");
+                println!("   Each node needs prev/next pointers");
+                
+                println!("\n3. No Random Access:");
+                println!("   Getting element i requires O(n) traversal");
+                
+                println!("\n4. When LinkedList might be OK:");
+                println!("   - Need to split/append in O(1)");
+                println!("   - Specific cursor operations");
+                println!("   - But usually VecDeque or Vec is better!");
+            }
+            8 => break,
+            _ => println!("Invalid choice!"),
+        }
+    }
+}
+
+fn performance_comparison() {
+    println!("\n=== Performance Comparison ===");
+    println!("\n📊 Time Complexity Summary:\n");
+    
+    println!("╔════════════════╦═════════╦═════════╦══════════╦═════════╗");
+    println!("║ Operation      ║ Vec     ║ VecDeque║ HashMap  ║ BTreeMap║");
+    println!("╠════════════════╬═════════╬═════════╬══════════╬═════════╣");
+    println!("║ Push end       ║ O(1)*   ║ O(1)*   ║ -        ║ -       ║");
+    println!("║ Push front     ║ O(n)    ║ O(1)*   ║ -        ║ -       ║");
+    println!("║ Pop end        ║ O(1)    ║ O(1)*   ║ -        ║ -       ║");
+    println!("║ Pop front      ║ O(n)    ║ O(1)*   ║ -        ║ -       ║");
+    println!("║ Index access   ║ O(1)    ║ O(1)    ║ -        ║ -       ║");
+    println!("║ Insert/Get     ║ -       ║ -       ║ O(1)*    ║ O(log n)║");
+    println!("║ Iteration      ║ Fast    ║ Fast    ║ Fast     ║ Sorted  ║");
+    println!("╚════════════════╩═════════╩═════════╩══════════╩═════════╝");
+    println!("\n* = amortized or average case\n");
+    
+    println!("💡 Collection Selection Guide:\n");
+    println!("Vec:        Default choice for lists");
+    println!("VecDeque:   Need efficient both-end operations");
+    println!("HashMap:    Fast key-value lookup, unordered");
+    println!("BTreeMap:   Sorted keys, range queries");
+    println!("HashSet:    Unique values, fast membership");
+    println!("BTreeSet:   Sorted unique values");
+    println!("BinaryHeap: Priority queue (max/min)");
+    println!("LinkedList: ⚠️  Rarely needed (use Vec/VecDeque)");
+}
+
+fn read_number() -> i32 {
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).expect("Failed to read line");
+    input.trim().parse().unwrap_or(0)
+}
+
+fn read_string() -> String {
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).expect("Failed to read line");
+    input.trim().to_string()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_vecdeque() {
+        let mut deque = VecDeque::new();
+        deque.push_back(1);
+        deque.push_front(0);
+        assert_eq!(deque.pop_front(), Some(0));
+        assert_eq!(deque.pop_back(), Some(1));
+    }
+    
+    #[test]
+    fn test_btreemap() {
+        let mut map = BTreeMap::new();
+        map.insert(3, "three");
+        map.insert(1, "one");
+        map.insert(2, "two");
+        
+        let keys: Vec<_> = map.keys().collect();
+        assert_eq!(keys, vec![&1, &2, &3]); // Sorted
+    }
+    
+    #[test]
+    fn test_binaryheap() {
+        let mut heap = BinaryHeap::new();
+        heap.push(3);
+        heap.push(1);
+        heap.push(5);
+        
+        assert_eq!(heap.pop(), Some(5)); // Max first
+    }
+}

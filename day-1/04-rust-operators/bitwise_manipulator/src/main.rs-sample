@@ -1,0 +1,396 @@
+// Bitwise Manipulator
+// Demonstrates bitwise operators and bit manipulation
+
+use std::io::{self, Write};
+
+fn main() {
+    println!("=== Bitwise Operations Demonstrator ===\n");
+    
+    loop {
+        println!("\nChoose a demonstration:");
+        println!("1. Basic Bitwise Operations");
+        println!("2. Bit Shifting");
+        println!("3. Bit Manipulation Techniques");
+        println!("4. Flags and Permissions");
+        println!("5. Binary Visualization");
+        println!("6. Practical Applications");
+        println!("7. Exit");
+        print!("\nYour choice: ");
+        io::stdout().flush().unwrap();
+        
+        let choice = read_number();
+        
+        match choice {
+            1 => basic_bitwise(),
+            2 => bit_shifting(),
+            3 => bit_manipulation(),
+            4 => flags_demo(),
+            5 => binary_visualization(),
+            6 => practical_applications(),
+            7 => {
+                println!("\nGoodbye!");
+                break;
+            }
+            _ => println!("Invalid choice!"),
+        }
+    }
+}
+
+fn basic_bitwise() {
+    println!("\n=== Basic Bitwise Operations ===");
+    
+    print!("\nEnter first number (0-255): ");
+    io::stdout().flush().unwrap();
+    let a = read_number() as u8;
+    
+    print!("Enter second number (0-255): ");
+    io::stdout().flush().unwrap();
+    let b = read_number() as u8;
+    
+    println!("\nBinary representation:");
+    println!("  a = {:3} = {:08b}", a, a);
+    println!("  b = {:3} = {:08b}", b, b);
+    
+    println!("\nBitwise Operations:");
+    
+    // AND
+    let and_result = a & b;
+    println!("\n  AND (&):");
+    println!("    {:08b}  ({})", a, a);
+    println!("  & {:08b}  ({})", b, b);
+    println!("  = {:08b}  ({})", and_result, and_result);
+    
+    // OR
+    let or_result = a | b;
+    println!("\n  OR (|):");
+    println!("    {:08b}  ({})", a, a);
+    println!("  | {:08b}  ({})", b, b);
+    println!("  = {:08b}  ({})", or_result, or_result);
+    
+    // XOR
+    let xor_result = a ^ b;
+    println!("\n  XOR (^):");
+    println!("    {:08b}  ({})", a, a);
+    println!("  ^ {:08b}  ({})", b, b);
+    println!("  = {:08b}  ({})", xor_result, xor_result);
+    
+    // NOT
+    let not_a = !a;
+    println!("\n  NOT (!):");
+    println!("  ! {:08b}  ({})", a, a);
+    println!("  = {:08b}  ({})", not_a, not_a);
+}
+
+fn bit_shifting() {
+    println!("\n=== Bit Shifting ===");
+    
+    print!("\nEnter a number (0-255): ");
+    io::stdout().flush().unwrap();
+    let num = read_number() as u8;
+    
+    println!("\nOriginal: {} = {:08b}", num, num);
+    
+    println!("\nLeft Shifts (<<):");
+    for i in 1..=4 {
+        let shifted = num.wrapping_shl(i);
+        println!("  {} << {} = {:3} = {:08b}  (multiply by {})", 
+            num, i, shifted, shifted, 1 << i);
+    }
+    
+    println!("\nRight Shifts (>>):");
+    for i in 1..=4 {
+        let shifted = num >> i;
+        println!("  {} >> {} = {:3} = {:08b}  (divide by {})", 
+            num, i, shifted, shifted, 1 << i);
+    }
+    
+    // Signed shift example
+    println!("\n--- Signed Right Shift ---");
+    let signed: i8 = -8;
+    println!("Original: {} = {:08b}", signed, signed as u8);
+    let shifted = signed >> 1;
+    println!("After >>: {} = {:08b}  (sign preserved)", shifted, shifted as u8);
+}
+
+fn bit_manipulation() {
+    println!("\n=== Bit Manipulation Techniques ===");
+    
+    print!("\nEnter a number (0-255): ");
+    io::stdout().flush().unwrap();
+    let mut num = read_number() as u8;
+    
+    println!("\nOriginal: {} = {:08b}", num, num);
+    
+    loop {
+        println!("\n1. Set a bit");
+        println!("2. Clear a bit");
+        println!("3. Toggle a bit");
+        println!("4. Check a bit");
+        println!("5. Back");
+        print!("\nChoice: ");
+        io::stdout().flush().unwrap();
+        
+        let choice = read_number();
+        
+        match choice {
+            1 => {
+                print!("Enter bit position (0-7): ");
+                io::stdout().flush().unwrap();
+                let pos = read_number() as u8;
+                if pos < 8 {
+                    num |= 1 << pos;
+                    println!("Result: {} = {:08b}", num, num);
+                }
+            }
+            2 => {
+                print!("Enter bit position (0-7): ");
+                io::stdout().flush().unwrap();
+                let pos = read_number() as u8;
+                if pos < 8 {
+                    num &= !(1 << pos);
+                    println!("Result: {} = {:08b}", num, num);
+                }
+            }
+            3 => {
+                print!("Enter bit position (0-7): ");
+                io::stdout().flush().unwrap();
+                let pos = read_number() as u8;
+                if pos < 8 {
+                    num ^= 1 << pos;
+                    println!("Result: {} = {:08b}", num, num);
+                }
+            }
+            4 => {
+                print!("Enter bit position (0-7): ");
+                io::stdout().flush().unwrap();
+                let pos = read_number() as u8;
+                if pos < 8 {
+                    let is_set = (num & (1 << pos)) != 0;
+                    println!("Bit {} is: {}", pos, if is_set { "SET (1)" } else { "CLEAR (0)" });
+                }
+            }
+            5 => break,
+            _ => println!("Invalid choice!"),
+        }
+    }
+}
+
+fn flags_demo() {
+    println!("\n=== Flags and Permissions System ===");
+    
+    // Define permission flags
+    const READ: u8 = 0b0001;    // 1
+    const WRITE: u8 = 0b0010;   // 2
+    const EXECUTE: u8 = 0b0100; // 4
+    const DELETE: u8 = 0b1000;  // 8
+    
+    let mut permissions: u8 = 0;
+    
+    println!("\nPermission Flags:");
+    println!("  READ    = {:04b} ({})", READ, READ);
+    println!("  WRITE   = {:04b} ({})", WRITE, WRITE);
+    println!("  EXECUTE = {:04b} ({})", EXECUTE, EXECUTE);
+    println!("  DELETE  = {:04b} ({})", DELETE, DELETE);
+    
+    loop {
+        println!("\n--- Current Permissions: {:04b} ({}) ---", permissions, permissions);
+        display_permissions(permissions, READ, WRITE, EXECUTE, DELETE);
+        
+        println!("\n1. Grant READ");
+        println!("2. Grant WRITE");
+        println!("3. Grant EXECUTE");
+        println!("4. Grant DELETE");
+        println!("5. Revoke READ");
+        println!("6. Revoke WRITE");
+        println!("7. Revoke EXECUTE");
+        println!("8. Revoke DELETE");
+        println!("9. Check permission");
+        println!("10. Reset all");
+        println!("11. Back");
+        print!("\nChoice: ");
+        io::stdout().flush().unwrap();
+        
+        let choice = read_number();
+        
+        match choice {
+            1 => permissions |= READ,
+            2 => permissions |= WRITE,
+            3 => permissions |= EXECUTE,
+            4 => permissions |= DELETE,
+            5 => permissions &= !READ,
+            6 => permissions &= !WRITE,
+            7 => permissions &= !EXECUTE,
+            8 => permissions &= !DELETE,
+            9 => {
+                print!("Check which? (READ/WRITE/EXECUTE/DELETE): ");
+                io::stdout().flush().unwrap();
+                let perm_str = read_string().to_uppercase();
+                let flag = match perm_str.as_str() {
+                    "READ" => READ,
+                    "WRITE" => WRITE,
+                    "EXECUTE" => EXECUTE,
+                    "DELETE" => DELETE,
+                    _ => 0,
+                };
+                if flag != 0 {
+                    let has_perm = (permissions & flag) != 0;
+                    println!("{}: {}", perm_str, if has_perm { "✅ GRANTED" } else { "❌ DENIED" });
+                }
+            }
+            10 => permissions = 0,
+            11 => break,
+            _ => println!("Invalid choice!"),
+        }
+    }
+}
+
+fn display_permissions(perms: u8, read: u8, write: u8, execute: u8, delete: u8) {
+    println!("  READ:    {}", if (perms & read) != 0 { "✅" } else { "❌" });
+    println!("  WRITE:   {}", if (perms & write) != 0 { "✅" } else { "❌" });
+    println!("  EXECUTE: {}", if (perms & execute) != 0 { "✅" } else { "❌" });
+    println!("  DELETE:  {}", if (perms & delete) != 0 { "✅" } else { "❌" });
+}
+
+fn binary_visualization() {
+    println!("\n=== Binary Visualization ===");
+    
+    print!("\nEnter a number (0-255): ");
+    io::stdout().flush().unwrap();
+    let num = read_number() as u8;
+    
+    println!("\nDecimal: {}", num);
+    println!("Binary:  {:08b}", num);
+    println!("Hex:     0x{:02X}", num);
+    println!("Octal:   {:03o}", num);
+    
+    // Visual representation
+    println!("\nBit positions:");
+    println!("  7  6  5  4  3  2  1  0");
+    println!("  {:2} {:2} {:2} {:2} {:2} {:2} {:2} {:2}", 
+        (num >> 7) & 1,
+        (num >> 6) & 1,
+        (num >> 5) & 1,
+        (num >> 4) & 1,
+        (num >> 3) & 1,
+        (num >> 2) & 1,
+        (num >> 1) & 1,
+        num & 1);
+    
+    // Bit values
+    println!("\nBit values (if set):");
+    for i in (0..8).rev() {
+        if (num & (1 << i)) != 0 {
+            println!("  Bit {} = {}", i, 1 << i);
+        }
+    }
+    
+    // Count set bits
+    let count = num.count_ones();
+    println!("\nSet bits: {}", count);
+    println!("Clear bits: {}", 8 - count);
+}
+
+fn practical_applications() {
+    println!("\n=== Practical Applications ===");
+    
+    println!("\n1. Fast Multiplication/Division by Powers of 2");
+    let num = 10;
+    println!("  {} * 2 = {} (using << 1)", num, num << 1);
+    println!("  {} * 4 = {} (using << 2)", num, num << 2);
+    println!("  {} * 8 = {} (using << 3)", num, num << 3);
+    println!("  {} / 2 = {} (using >> 1)", num, num >> 1);
+    println!("  {} / 4 = {} (using >> 2)", num, num >> 2);
+    
+    println!("\n2. Check if Power of 2");
+    for n in [1, 2, 3, 4, 5, 8, 16, 31, 32] {
+        let is_power = n != 0 && (n & (n - 1)) == 0;
+        println!("  {} is {} power of 2", n, if is_power { "a" } else { "NOT a" });
+    }
+    
+    println!("\n3. Toggle Case (ASCII)");
+    let ch = 'A';
+    let toggled = ((ch as u8) ^ 32) as char;
+    println!("  '{}' toggled = '{}'", ch, toggled);
+    let ch2 = 'a';
+    let toggled2 = ((ch2 as u8) ^ 32) as char;
+    println!("  '{}' toggled = '{}'", ch2, toggled2);
+    
+    println!("\n4. Swap Without Temp Variable");
+    let mut a = 5;
+    let mut b = 10;
+    println!("  Before: a = {}, b = {}", a, b);
+    a ^= b;
+    b ^= a;
+    a ^= b;
+    println!("  After:  a = {}, b = {}", a, b);
+    
+    println!("\n5. Extract/Set Nibbles (4 bits)");
+    let byte: u8 = 0xAB;
+    let high_nibble = (byte >> 4) & 0x0F;
+    let low_nibble = byte & 0x0F;
+    println!("  Byte: 0x{:02X}", byte);
+    println!("  High nibble: 0x{:X}", high_nibble);
+    println!("  Low nibble:  0x{:X}", low_nibble);
+    
+    println!("\n6. Count Set Bits (Population Count)");
+    for n in [0u8, 1, 7, 15, 127, 255] {
+        println!("  {:3} ({:08b}) has {} set bits", n, n, n.count_ones());
+    }
+}
+
+fn read_number() -> i32 {
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).expect("Failed to read line");
+    input.trim().parse().unwrap_or(0)
+}
+
+fn read_string() -> String {
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).expect("Failed to read line");
+    input.trim().to_string()
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_bitwise_operations() {
+        assert_eq!(0b1100 & 0b1010, 0b1000);
+        assert_eq!(0b1100 | 0b1010, 0b1110);
+        assert_eq!(0b1100 ^ 0b1010, 0b0110);
+        assert_eq!(!0b0000u8, 0b11111111);
+    }
+    
+    #[test]
+    fn test_bit_shifting() {
+        assert_eq!(5 << 1, 10);
+        assert_eq!(5 << 2, 20);
+        assert_eq!(10 >> 1, 5);
+        assert_eq!(10 >> 2, 2);
+    }
+    
+    #[test]
+    fn test_bit_manipulation() {
+        let mut num = 0u8;
+        
+        // Set bit
+        num |= 1 << 2;
+        assert_eq!(num, 0b0100);
+        
+        // Clear bit
+        num &= !(1 << 2);
+        assert_eq!(num, 0);
+        
+        // Toggle bit
+        num ^= 1 << 3;
+        assert_eq!(num, 0b1000);
+        num ^= 1 << 3;
+        assert_eq!(num, 0);
+    }
+    
+    #[test]
+    fn test_power_of_2() {
+        assert!(2 != 0 && (2 & (2 - 1)) == 0);
+        assert!(4 != 0 && (4 & (4 - 1)) == 0);
+        assert!(!(3 != 0 && (3 & (3 - 1)) == 0));
+    }
+}
