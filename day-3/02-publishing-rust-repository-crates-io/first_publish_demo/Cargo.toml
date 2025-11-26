@@ -1,0 +1,14 @@
+[package]
+name = "first_publish_demo"
+version = "0.1.0"
+edition = "2021"
+authors = ["Rust Training <training@example.com>"]
+description = "A simple demonstration library for learning how to publish to crates.io"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/example/first_publish_demo"
+documentation = "https://docs.rs/first_publish_demo"
+readme = "README.md"
+keywords = ["demo", "tutorial", "publishing", "example"]
+categories = ["development-tools"]
+
+[dependencies]

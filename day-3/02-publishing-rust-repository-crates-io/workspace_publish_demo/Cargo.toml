@@ -1,0 +1,19 @@
+[workspace]
+resolver = "2"
+members = [
+    "myapp_core",
+    "myapp_utils",
+    "myapp",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Rust Training <training@example.com>"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/example/myapp"
+
+[workspace.dependencies]
+# Shared external dependencies
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "1.0"
