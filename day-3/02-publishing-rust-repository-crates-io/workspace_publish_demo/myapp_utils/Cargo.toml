@@ -1,0 +1,15 @@
+[package]
+name = "myapp_utils"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Utility functions for MyApp - helpers and common operations"
+keywords = ["utils", "helpers", "utilities"]
+categories = ["development-tools"]
+readme = "README.md"
+
+[dependencies]
+myapp_core = { version = "0.1.0", path = "../myapp_core" }
+serde.workspace = true

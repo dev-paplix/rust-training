@@ -1,0 +1,16 @@
+[package]
+name = "myapp"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "MyApp main library - combines core and utils with high-level API"
+keywords = ["app", "library", "api"]
+categories = ["development-tools"]
+readme = "README.md"
+
+[dependencies]
+myapp_core = { version = "0.1.0", path = "../myapp_core" }
+myapp_utils = { version = "0.1.0", path = "../myapp_utils" }
+serde.workspace = true

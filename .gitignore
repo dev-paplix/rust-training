@@ -1,5 +1,4 @@
-*.rs
-*.toml
+
 Cargo.lock
 /target
 /target/

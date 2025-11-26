@@ -1,0 +1,15 @@
+[package]
+name = "myapp_core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Core functionality for MyApp - data structures and traits"
+keywords = ["core", "data", "traits"]
+categories = ["data-structures"]
+readme = "README.md"
+
+[dependencies]
+serde.workspace = true
+thiserror.workspace = true

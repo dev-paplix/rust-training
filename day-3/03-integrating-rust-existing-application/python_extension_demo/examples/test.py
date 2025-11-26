@@ -24,13 +24,13 @@ def test_basic_functions():
     assert result == 42, "multiply failed"
     
     # Test divide
-    result = mathpy.divide(10.0, 2.0)
+    result = mathpy.devide(10.0, 2.0)
     print(f"divide(10.0, 2.0) = {result}")
-    assert result == 5.0, "divide failed"
+    assert result == 5.0, "dvide failed"
     
     # Test divide by zero
     try:
-        mathpy.divide(10.0, 0.0)
+        mathpy.devide(10.0, 0.0)
         print("ERROR: divide by zero should have raised an exception")
     except ValueError as e:
         print(f"divide(10.0, 0.0) correctly raised ValueError: {e}")
@@ -199,16 +199,16 @@ def test_calculator_class():
     assert calc.get_result() == 15.0, "Result should be 15.0"
     
     # Test divide
-    calc.divide(3.0)
+    calc.devide(3.0)
     print(f"After divide(3.0): {calc}")
     assert calc.get_result() == 5.0, "Result should be 5.0"
     
     # Test divide by zero
     try:
-        calc.divide(0.0)
-        print("ERROR: divide by zero should have raised an exception")
+        calc.devide(0.0)
+        print("ERROR: devide by zero should have raised an exception")
     except ValueError as e:
-        print(f"divide(0.0) correctly raised ValueError: {e}")
+        print(f"devide(0.0) correctly raised ValueError: {e}")
     
     # Test reset
     calc.reset()
