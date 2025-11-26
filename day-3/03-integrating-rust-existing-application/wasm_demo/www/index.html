@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rust WebAssembly Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
+            margin-top: 5px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result strong {
+            color: #667eea;
+        }
+
+        #output {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            min-height: 150px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        #dom-output {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            min-height: 100px;
+        }
+
+        .counter-display {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .info-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🦀 Rust WebAssembly Demo</h1>
+
+        <div class="demo-grid">
+            <!-- Arithmetic Demo -->
+            <div class="card">
+                <h2>Arithmetic Operations</h2>
+                <div class="input-group">
+                    <label for="num1">Number 1:</label>
+                    <input type="number" id="num1" value="10">
+                </div>
+                <div class="input-group">
+                    <label for="num2">Number 2:</label>
+                    <input type="number" id="num2" value="5">
+                </div>
+                <div class="button-row">
+                    <button onclick="doAdd()">Add</button>
+                    <button onclick="doMultiply()">Multiply</button>
+                    <button onclick="doDivide()">Divide</button>
+                </div>
+                <div id="arith-result" class="result" style="display:none;">
+                    <strong>Result:</strong> <span id="arith-value"></span>
+                </div>
+            </div>
+
+            <!-- String Operations Demo -->
+            <div class="card">
+                <h2>String Operations</h2>
+                <div class="input-group">
+                    <label for="text-input">Enter text:</label>
+                    <input type="text" id="text-input" value="Hello WebAssembly" placeholder="Enter text...">
+                </div>
+                <div class="button-row">
+                    <button onclick="doGreet()">Greet</button>
+                    <button onclick="doUppercase()">Uppercase</button>
+                    <button onclick="doReverse()">Reverse</button>
+                    <button onclick="doWordCount()">Word Count</button>
+                    <button onclick="doPalindrome()">Check Palindrome</button>
+                </div>
+                <div id="string-result" class="result" style="display:none;">
+                    <strong>Result:</strong> <span id="string-value"></span>
+                </div>
+            </div>
+
+            <!-- Number Functions Demo -->
+            <div class="card">
+                <h2>Number Functions</h2>
+                <div class="input-group">
+                    <label for="num-input">Enter a number:</label>
+                    <input type="number" id="num-input" value="5">
+                </div>
+                <div class="button-row">
+                    <button onclick="doFactorial()">Factorial</button>
+                    <button onclick="doIsPrime()">Check Prime</button>
+                </div>
+                <div id="number-result" class="result" style="display:none;">
+                    <strong>Result:</strong> <span id="number-value"></span>
+                </div>
+            </div>
+
+            <!-- Counter Demo -->
+            <div class="card">
+                <h2>Counter Class</h2>
+                <div class="counter-display" id="counter-display">0</div>
+                <div class="button-row" style="justify-content: center;">
+                    <button onclick="counterIncrement()">➕ Increment</button>
+                    <button onclick="counterDecrement()">➖ Decrement</button>
+                    <button onclick="counterAdd5()">+5</button>
+                    <button onclick="counterReset()">🔄 Reset</button>
+                </div>
+                <div class="info-badge">Rust struct in JavaScript!</div>
+            </div>
+
+            <!-- Point Demo -->
+            <div class="card">
+                <h2>Point Class</h2>
+                <div class="input-group">
+                    <label>Point 1:</label>
+                    <input type="number" id="p1x" value="0" placeholder="x" style="width: 48%; display: inline-block; margin-right: 4%;">
+                    <input type="number" id="p1y" value="0" placeholder="y" style="width: 48%; display: inline-block;">
+                </div>
+                <div class="input-group">
+                    <label>Point 2:</label>
+                    <input type="number" id="p2x" value="3" placeholder="x" style="width: 48%; display: inline-block; margin-right: 4%;">
+                    <input type="number" id="p2y" value="4" placeholder="y" style="width: 48%; display: inline-block;">
+                </div>
+                <div class="button-row">
+                    <button onclick="calculateDistance()">Distance</button>
+                    <button onclick="calculateMidpoint()">Midpoint</button>
+                </div>
+                <div id="point-result" class="result" style="display:none;">
+                    <strong>Result:</strong> <span id="point-value"></span>
+                </div>
+            </div>
+
+            <!-- Calculator Demo -->
+            <div class="card">
+                <h2>Calculator Class</h2>
+                <div class="counter-display" id="calc-display">0</div>
+                <div class="input-group">
+                    <label for="calc-input">Value:</label>
+                    <input type="number" id="calc-input" value="10">
+                </div>
+                <div class="button-row" style="justify-content: center;">
+                    <button onclick="calcAdd()">Add</button>
+                    <button onclick="calcSubtract()">Subtract</button>
+                    <button onclick="calcMultiply()">Multiply</button>
+                    <button onclick="calcDivide()">Divide</button>
+                    <button onclick="calcReset()">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DOM Manipulation Demo -->
+        <div class="card">
+            <h2>DOM Manipulation</h2>
+            <div class="input-group">
+                <label for="dom-text">Text to append:</label>
+                <input type="text" id="dom-text" value="Hello from Rust!" placeholder="Enter text...">
+            </div>
+            <div class="button-row">
+                <button onclick="appendText()">Append Paragraph</button>
+                <button onclick="clearDOM()">Clear Output</button>
+                <button onclick="logToConsole()">Log to Console</button>
+            </div>
+            <div id="dom-output"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import init, * as wasm from './pkg/wasm_demo.js';
+
+        // Global state
+        let counter = null;
+        let calculator = null;
+
+        // Initialize WASM
+        async function run() {
+            await init();
+            
+            // Create instances
+            counter = new wasm.Counter();
+            calculator = new wasm.Calculator();
+            
+            // Update displays
+            updateCounterDisplay();
+            updateCalcDisplay();
+            
+            // Make WASM functions globally available
+            window.wasm = wasm;
+            window.counter = counter;
+            window.calculator = calculator;
+            
+            console.log('✅ WebAssembly module initialized!');
+        }
+
+        // Counter functions
+        window.updateCounterDisplay = function() {
+            document.getElementById('counter-display').textContent = counter.value;
+        }
+
+        window.counterIncrement = function() {
+            counter.increment();
+            updateCounterDisplay();
+        }
+
+        window.counterDecrement = function() {
+            counter.decrement();
+            updateCounterDisplay();
+        }
+
+        window.counterAdd5 = function() {
+            counter.increment_by(5);
+            updateCounterDisplay();
+        }
+
+        window.counterReset = function() {
+            counter.reset();
+            updateCounterDisplay();
+        }
+
+        // Calculator functions
+        window.updateCalcDisplay = function() {
+            document.getElementById('calc-display').textContent = calculator.result.toFixed(2);
+        }
+
+        window.calcAdd = function() {
+            const value = parseFloat(document.getElementById('calc-input').value);
+            calculator.add(value);
+            updateCalcDisplay();
+        }
+
+        window.calcSubtract = function() {
+            const value = parseFloat(document.getElementById('calc-input').value);
+            calculator.subtract(value);
+            updateCalcDisplay();
+        }
+
+        window.calcMultiply = function() {
+            const value = parseFloat(document.getElementById('calc-input').value);
+            calculator.multiply(value);
+            updateCalcDisplay();
+        }
+
+        window.calcDivide = function() {
+            const value = parseFloat(document.getElementById('calc-input').value);
+            if (!calculator.divide(value)) {
+                alert('Cannot divide by zero!');
+            }
+            updateCalcDisplay();
+        }
+
+        window.calcReset = function() {
+            calculator.reset();
+            updateCalcDisplay();
+        }
+
+        // Arithmetic operations
+        window.doAdd = function() {
+            const a = parseInt(document.getElementById('num1').value);
+            const b = parseInt(document.getElementById('num2').value);
+            const result = wasm.add(a, b);
+            showResult('arith', `${a} + ${b} = ${result}`);
+        }
+
+        window.doMultiply = function() {
+            const a = parseInt(document.getElementById('num1').value);
+            const b = parseInt(document.getElementById('num2').value);
+            const result = wasm.multiply(a, b);
+            showResult('arith', `${a} × ${b} = ${result}`);
+        }
+
+        window.doDivide = function() {
+            const a = parseFloat(document.getElementById('num1').value);
+            const b = parseFloat(document.getElementById('num2').value);
+            const result = wasm.divide(a, b);
+            if (result !== undefined && result !== null) {
+                showResult('arith', `${a} ÷ ${b} = ${result}`);
+            } else {
+                showResult('arith', 'Cannot divide by zero!');
+            }
+        }
+
+        // String operations
+        window.doGreet = function() {
+            const text = document.getElementById('text-input').value;
+            const result = wasm.greet(text);
+            showResult('string', result);
+        }
+
+        window.doUppercase = function() {
+            const text = document.getElementById('text-input').value;
+            const result = wasm.to_uppercase(text);
+            showResult('string', result);
+        }
+
+        window.doReverse = function() {
+            const text = document.getElementById('text-input').value;
+            const result = wasm.reverse_string(text);
+            showResult('string', result);
+        }
+
+        window.doWordCount = function() {
+            const text = document.getElementById('text-input').value;
+            const result = wasm.word_count(text);
+            showResult('string', `Word count: ${result}`);
+        }
+
+        window.doPalindrome = function() {
+            const text = document.getElementById('text-input').value;
+            const result = wasm.is_palindrome(text);
+            showResult('string', `"${text}" is ${result ? '' : 'NOT '}a palindrome`);
+        }
+
+        // Number functions
+        window.doFactorial = function() {
+            const n = parseInt(document.getElementById('num-input').value);
+            const result = wasm.factorial(n);
+            showResult('number', `${n}! = ${result}`);
+        }
+
+        window.doIsPrime = function() {
+            const n = parseInt(document.getElementById('num-input').value);
+            const result = wasm.is_prime(n);
+            showResult('number', `${n} is ${result ? '' : 'NOT '}a prime number`);
+        }
+
+        // Point operations
+        window.calculateDistance = function() {
+            const p1 = new wasm.Point(
+                parseFloat(document.getElementById('p1x').value),
+                parseFloat(document.getElementById('p1y').value)
+            );
+            const p2 = new wasm.Point(
+                parseFloat(document.getElementById('p2x').value),
+                parseFloat(document.getElementById('p2y').value)
+            );
+            const distance = p1.distance_to(p2);
+            showResult('point', `Distance: ${distance.toFixed(2)}`);
+        }
+
+        window.calculateMidpoint = function() {
+            const p1 = new wasm.Point(
+                parseFloat(document.getElementById('p1x').value),
+                parseFloat(document.getElementById('p1y').value)
+            );
+            const p2 = new wasm.Point(
+                parseFloat(document.getElementById('p2x').value),
+                parseFloat(document.getElementById('p2y').value)
+            );
+            const mid = p1.midpoint(p2);
+            showResult('point', `Midpoint: (${mid.x.toFixed(2)}, ${mid.y.toFixed(2)})`);
+        }
+
+        // DOM manipulation
+        window.appendText = function() {
+            const text = document.getElementById('dom-text').value;
+            wasm.append_paragraph(text);
+        }
+
+        window.clearDOM = function() {
+            document.getElementById('dom-output').innerHTML = '';
+        }
+
+        window.logToConsole = function() {
+            const text = document.getElementById('dom-text').value;
+            wasm.log(`📝 ${text}`);
+            wasm.warn(`⚠️ This is a warning: ${text}`);
+            wasm.error(`❌ This is an error: ${text}`);
+            alert('Check the browser console (F12) to see the logs!');
+        }
+
+        // Helper function
+        function showResult(prefix, text) {
+            const resultDiv = document.getElementById(`${prefix}-result`);
+            const valueSpan = document.getElementById(`${prefix}-value`);
+            valueSpan.textContent = text;
+            resultDiv.style.display = 'block';
+        }
+
+        run();
+    </script>
+</body>
+</html>

@@ -1,0 +1,394 @@
+use std::io::{self, Write};
+
+/// Demonstrates destructuring patterns in Rust
+fn main() {
+    println!("=== Destructuring Patterns Demo ===\n");
+    
+    loop {
+        display_menu();
+        
+        let choice = get_user_choice();
+        
+        match choice {
+            1 => tuple_destructuring_demo(),
+            2 => struct_destructuring_demo(),
+            3 => nested_destructuring_demo(),
+            4 => array_destructuring_demo(),
+            5 => function_parameter_demo(),
+            6 => let_destructuring_demo(),
+            7 => {
+                println!("Goodbye!");
+                break;
+            }
+            _ => println!("Invalid choice, try again."),
+        }
+        
+        println!();
+    }
+}
+
+fn display_menu() {
+    println!("\n--- Destructuring Patterns ---");
+    println!("1. Tuple Destructuring");
+    println!("2. Struct Destructuring");
+    println!("3. Nested Destructuring");
+    println!("4. Array/Slice Destructuring");
+    println!("5. Function Parameter Destructuring");
+    println!("6. Let Destructuring");
+    println!("7. Exit");
+}
+
+fn get_user_choice() -> u32 {
+    print!("\nEnter your choice: ");
+    io::stdout().flush().unwrap();
+    
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+    
+    input.trim().parse().unwrap_or(0)
+}
+
+fn get_input(prompt: &str) -> String {
+    print!("{}", prompt);
+    io::stdout().flush().unwrap();
+    
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+    input.trim().to_string()
+}
+
+// Tuple Destructuring
+fn tuple_destructuring_demo() {
+    println!("\n--- Tuple Destructuring ---");
+    
+    let x = get_input("Enter x: ").parse().unwrap_or(0);
+    let y = get_input("Enter y: ").parse().unwrap_or(0);
+    let z = get_input("Enter z: ").parse().unwrap_or(0);
+    
+    let tuple = (x, y, z);
+    
+    // Basic destructuring
+    let (a, b, c) = tuple;
+    println!("\nBasic destructuring:");
+    println!("  a = {}, b = {}, c = {}", a, b, c);
+    
+    // Ignoring values
+    let (first, _, last) = tuple;
+    println!("\nIgnoring middle value:");
+    println!("  first = {}, last = {}", first, last);
+    
+    // Nested tuples
+    let nested = ((1, 2), (3, 4), (5, 6));
+    let ((a1, a2), (b1, b2), (c1, c2)) = nested;
+    println!("\nNested tuple destructuring:");
+    println!("  ({}, {}), ({}, {}), ({}, {})", a1, a2, b1, b2, c1, c2);
+    
+    // Match with tuples
+    println!("\nPattern matching on tuple:");
+    match tuple {
+        (0, 0, 0) => println!("  All zeros (origin)"),
+        (x, 0, 0) => println!("  On X-axis at {}", x),
+        (0, y, 0) => println!("  On Y-axis at {}", y),
+        (0, 0, z) => println!("  On Z-axis at {}", z),
+        (x, y, 0) => println!("  On XY plane at ({}, {})", x, y),
+        (x, y, z) => println!("  In 3D space at ({}, {}, {})", x, y, z),
+    }
+    
+    // Using rest pattern (..)
+    let long_tuple = (1, 2, 3, 4, 5);
+    let (first, .., last) = long_tuple;
+    println!("\nRest pattern:");
+    println!("  First: {}, Last: {}", first, last);
+}
+
+// Struct Destructuring
+#[derive(Debug, Clone)]
+struct Point {
+    x: i32,
+    y: i32,
+}
+
+#[derive(Debug, Clone)]
+struct Person {
+    name: String,
+    age: u32,
+    email: String,
+}
+
+#[derive(Debug, Clone)]
+struct Rectangle {
+    top_left: Point,
+    bottom_right: Point,
+}
+
+fn struct_destructuring_demo() {
+    println!("\n--- Struct Destructuring ---");
+    
+    let name = get_input("Enter name: ");
+    let age = get_input("Enter age: ").parse().unwrap_or(0);
+    let email = get_input("Enter email: ");
+    
+    let person = Person { name, age, email };
+    
+    // Basic destructuring
+    let Person { name, age, email } = &person;
+    println!("\nBasic destructuring:");
+    println!("  Name: {}", name);
+    println!("  Age: {}", age);
+    println!("  Email: {}", email);
+    
+    // Renaming fields
+    let Person { name: person_name, age: person_age, .. } = &person;
+    println!("\nRenamed fields:");
+    println!("  person_name: {}", person_name);
+    println!("  person_age: {}", person_age);
+    
+    // Pattern matching
+    match person.age {
+        age @ 0..=12 => println!("\n{} is a child ({})", person.name, age),
+        age @ 13..=19 => println!("\n{} is a teenager ({})", person.name, age),
+        age @ 20..=64 => println!("\n{} is an adult ({})", person.name, age),
+        age => println!("\n{} is a senior ({})", person.name, age),
+    }
+    
+    // Point example
+    let x = get_input("\nEnter point x: ").parse().unwrap_or(0);
+    let y = get_input("Enter point y: ").parse().unwrap_or(0);
+    let point = Point { x, y };
+    
+    match point {
+        Point { x: 0, y: 0 } => println!("Point is at origin"),
+        Point { x: 0, y } => println!("Point on Y-axis at y={}", y),
+        Point { x, y: 0 } => println!("Point on X-axis at x={}", x),
+        Point { x, y } => println!("Point at ({}, {})", x, y),
+    }
+}
+
+// Nested Destructuring
+#[derive(Debug)]
+enum Shape {
+    Circle { center: Point, radius: f64 },
+    Rectangle { top_left: Point, bottom_right: Point },
+    Triangle { p1: Point, p2: Point, p3: Point },
+}
+
+fn nested_destructuring_demo() {
+    println!("\n--- Nested Destructuring ---");
+    println!("1. Circle");
+    println!("2. Rectangle");
+    println!("3. Triangle");
+    
+    let choice = get_input("\nSelect shape: ");
+    
+    let shape = match choice.as_str() {
+        "1" => {
+            let cx = get_input("Center X: ").parse().unwrap_or(0);
+            let cy = get_input("Center Y: ").parse().unwrap_or(0);
+            let radius = get_input("Radius: ").parse().unwrap_or(0.0);
+            Shape::Circle {
+                center: Point { x: cx, y: cy },
+                radius,
+            }
+        }
+        "2" => {
+            let x1 = get_input("Top-left X: ").parse().unwrap_or(0);
+            let y1 = get_input("Top-left Y: ").parse().unwrap_or(0);
+            let x2 = get_input("Bottom-right X: ").parse().unwrap_or(0);
+            let y2 = get_input("Bottom-right Y: ").parse().unwrap_or(0);
+            Shape::Rectangle {
+                top_left: Point { x: x1, y: y1 },
+                bottom_right: Point { x: x2, y: y2 },
+            }
+        }
+        "3" => {
+            Shape::Triangle {
+                p1: Point { x: 0, y: 0 },
+                p2: Point { x: 0, y: 10 },
+                p3: Point { x: 10, y: 0 },
+            }
+        }
+        _ => {
+            println!("Invalid choice!");
+            return;
+        }
+    };
+    
+    analyze_shape(&shape);
+}
+
+fn analyze_shape(shape: &Shape) {
+    println!("\n--- Shape Analysis ---");
+    
+    match shape {
+        Shape::Circle { center: Point { x, y }, radius } => {
+            println!("Type: Circle");
+            println!("  Center: ({}, {})", x, y);
+            println!("  Radius: {}", radius);
+            println!("  Area: {:.2}", std::f64::consts::PI * radius * radius);
+            println!("  Circumference: {:.2}", 2.0 * std::f64::consts::PI * radius);
+        }
+        Shape::Rectangle {
+            top_left: Point { x: x1, y: y1 },
+            bottom_right: Point { x: x2, y: y2 },
+        } => {
+            println!("Type: Rectangle");
+            println!("  Top-left: ({}, {})", x1, y1);
+            println!("  Bottom-right: ({}, {})", x2, y2);
+            let width = (x2 - x1).abs();
+            let height = (y2 - y1).abs();
+            println!("  Width: {}", width);
+            println!("  Height: {}", height);
+            println!("  Area: {}", width * height);
+            println!("  Perimeter: {}", 2 * (width + height));
+        }
+        Shape::Triangle {
+            p1: Point { x: x1, y: y1 },
+            p2: Point { x: x2, y: y2 },
+            p3: Point { x: x3, y: y3 },
+        } => {
+            println!("Type: Triangle");
+            println!("  P1: ({}, {})", x1, y1);
+            println!("  P2: ({}, {})", x2, y2);
+            println!("  P3: ({}, {})", x3, y3);
+        }
+    }
+}
+
+// Array/Slice Destructuring
+fn array_destructuring_demo() {
+    println!("\n--- Array/Slice Destructuring ---");
+    
+    let input = get_input("Enter numbers separated by spaces: ");
+    let numbers: Vec<i32> = input
+        .split_whitespace()
+        .filter_map(|s| s.parse().ok())
+        .collect();
+    
+    println!("\nMatching on slice pattern:");
+    
+    match numbers.as_slice() {
+        [] => println!("  Empty array"),
+        [x] => println!("  Single element: {}", x),
+        [x, y] => println!("  Two elements: {} and {}", x, y),
+        [first, middle @ .., last] => {
+            println!("  First: {}", first);
+            println!("  Middle: {:?}", middle);
+            println!("  Last: {}", last);
+            println!("  Total elements: {}", numbers.len());
+        }
+    }
+    
+    // Fixed-size array
+    let array = [1, 2, 3, 4, 5];
+    let [a, b, c, d, e] = array;
+    println!("\nFixed array destructuring:");
+    println!("  Elements: {}, {}, {}, {}, {}", a, b, c, d, e);
+    
+    // Pattern with rest
+    let [first, .., last] = array;
+    println!("  First: {}, Last: {}", first, last);
+}
+
+// Function Parameter Destructuring
+fn process_point(Point { x, y }: Point) {
+    println!("  Processing point at ({}, {})", x, y);
+}
+
+fn process_person(Person { name, age, .. }: Person) {
+    println!("  {} is {} years old", name, age);
+}
+
+fn process_tuple((a, b, c): (i32, i32, i32)) -> i32 {
+    println!("  Tuple: ({}, {}, {})", a, b, c);
+    a + b + c
+}
+
+fn function_parameter_demo() {
+    println!("\n--- Function Parameter Destructuring ---");
+    
+    let point = Point { x: 10, y: 20 };
+    println!("Point:");
+    process_point(point);
+    
+    let person = Person {
+        name: "Alice".to_string(),
+        age: 30,
+        email: "alice@example.com".to_string(),
+    };
+    println!("\nPerson:");
+    process_person(person);
+    
+    let tuple = (5, 10, 15);
+    println!("\nTuple:");
+    let sum = process_tuple(tuple);
+    println!("  Sum: {}", sum);
+}
+
+// Let Destructuring
+fn let_destructuring_demo() {
+    println!("\n--- Let Destructuring ---");
+    
+    // Simple let destructuring
+    let (x, y, z) = (1, 2, 3);
+    println!("Tuple: x={}, y={}, z={}", x, y, z);
+    
+    // Struct in let
+    let point = Point { x: 100, y: 200 };
+    let Point { x: px, y: py } = point;
+    println!("Point: px={}, py={}", px, py);
+    
+    // Nested
+    let ((a, b), (c, d)) = ((1, 2), (3, 4));
+    println!("Nested: a={}, b={}, c={}, d={}", a, b, c, d);
+    
+    // With type annotation
+    let Point { x, y }: Point = Point { x: 50, y: 75 };
+    println!("With type: x={}, y={}", x, y);
+    
+    // Ignoring values
+    let (first, _, third) = (10, 20, 30);
+    println!("Ignore middle: first={}, third={}", first, third);
+    
+    // If let for refutable patterns
+    let option_value = Some(42);
+    if let Some(value) = option_value {
+        println!("Option value: {}", value);
+    }
+    
+    // While let
+    let mut stack = vec![1, 2, 3, 4, 5];
+    println!("\nPopping from stack:");
+    while let Some(top) = stack.pop() {
+        println!("  Popped: {}", top);
+        if top == 3 {
+            break;
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_tuple_destructuring() {
+        let (x, y, z) = (1, 2, 3);
+        assert_eq!(x, 1);
+        assert_eq!(y, 2);
+        assert_eq!(z, 3);
+    }
+    
+    #[test]
+    fn test_struct_destructuring() {
+        let point = Point { x: 10, y: 20 };
+        let Point { x, y } = point;
+        assert_eq!(x, 10);
+        assert_eq!(y, 20);
+    }
+    
+    #[test]
+    fn test_process_tuple() {
+        let result = process_tuple((1, 2, 3));
+        assert_eq!(result, 6);
+    }
+}
