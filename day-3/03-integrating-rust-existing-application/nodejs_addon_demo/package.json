@@ -1,0 +1,16 @@
+{
+  "name": "nodejs-addon-demo",
+  "version": "0.1.0",
+  "description": "Simple FFI-based Node.js addon using Rust",
+  "main": "index.js",
+  "scripts": {
+    "build": "cargo build --release",
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "ffi-napi": "^4.0.3",
+    "ref-napi": "^3.0.3"
+  },
+  "author": "",
+  "license": "MIT"
+}
